@@ -1,0 +1,7 @@
+{% autoescape off %}
+Hi {{ user.first_name }} {{ user.last_name }},
+
+Your account has been successfully created. Please click link below to activate your account.
+
+http://{{ domain }}
+{% endautoescape %}

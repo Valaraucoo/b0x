@@ -15,13 +15,8 @@ class CustomUserChangeForm(UserChangeForm):
         fields = ('email', 'first_name', 'last_name',)
 
 
-tailwind_form = 'appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 ' \
-                'placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:shadow-outline-blue ' \
-                'focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5'
-
-tailwind_form2 = 'appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 ' \
-                 'placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 ' \
-                 'focus:border-indigo-500 focus:z-10 sm:text-sm'
+tailwind_form = 'appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4' \
+                ' leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
 
 
 class LoginForm(forms.Form):
@@ -30,7 +25,7 @@ class LoginForm(forms.Form):
         'placeholder': 'Email address',
     }))
     password = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={
-        'class': tailwind_form2,
+        'class': tailwind_form,
         'placeholder': 'Password',
     }))
 
@@ -47,27 +42,46 @@ class RegistrationForm(forms.ModelForm):
                                  min_length=2,
                                  label='Enter first name',
                                  widget=forms.TextInput(attrs={
-                                     'class': tailwind_form, 'placeholder': 'First name'
+                                     'class': tailwind_form, 'placeholder': 'John'
                                  }))
     last_name = forms.CharField(max_length=100,
                                 min_length=2,
                                 label='Enter first name',
                                 widget=forms.TextInput(attrs={
-                                    'class': tailwind_form, 'placeholder': 'First name'
+                                    'class': tailwind_form, 'placeholder': 'Smith'
                                 }))
     password = forms.CharField(max_length=100,
+                               min_length=5,
                                required=True,
                                label='Password',
                                widget=forms.PasswordInput(attrs={
-                                   'class': tailwind_form2, 'placeholder': 'Password',
+                                   'class': tailwind_form, 'placeholder': 'Password',
                                }))
     password2 = forms.CharField(max_length=100,
                                 required=True,
+                                min_length=5,
                                 label='Confirm Password',
                                 widget=forms.PasswordInput(attrs={
-                                    'class': tailwind_form2, 'placeholder': 'Confirm Password',
+                                    'class': tailwind_form, 'placeholder': 'Confirm Password',
                                 }))
 
     class Meta:
         model = User
         fields = ('email', 'first_name', 'last_name', 'password', 'password2')
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        password = cleaned_data.get('password')
+        password2 = cleaned_data.get('password2')
+
+        if password != password2:
+            self.add_error('password2', 'Two password fields must match!')
+        return cleaned_data
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email').lower()
+        qs = User.objects.filter(email=email)
+        if qs.count():
+            raise forms.ValidationError('User with this email already exists!')
+        return email

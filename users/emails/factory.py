@@ -11,7 +11,7 @@ class AccountActivationEmailFactory(EmailFactoryInterface):
     subject = "Activate your Account"
     email_template_name = "emails/users/activate.html"
 
-    def __init__(self, user, request, *args, **kwargs):
+    def  __init__(self, user, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
         self.request = request

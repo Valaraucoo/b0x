@@ -6,8 +6,6 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect, render
 from django.views import generic
 
-from django import forms as django_forms
-
 from core import settings
 
 

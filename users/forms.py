@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm, PasswordResetForm, SetPasswordForm
 from django import forms
 from users.models import User
 
@@ -85,3 +85,37 @@ class RegistrationForm(forms.ModelForm):
         if qs.count():
             raise forms.ValidationError('User with this email already exists!')
         return email
+
+
+class CustomPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(max_length=100,
+                             required=True,
+                             help_text='Required',
+                             error_messages={'required': 'Sorry, you will need type an unique email address'},
+                             widget=forms.EmailInput(attrs={
+                                 'class': tailwind_form, 'placeholder': 'Email address'
+                             }))
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        user = User.objects.filter(email=email)
+        if not user:
+            raise forms.ValidationError('Unfortunately we can not find that email address')
+        return email
+
+
+class CustomPasswordResetConfirmForm(SetPasswordForm):
+    new_password1 = forms.CharField(max_length=100,
+                                    min_length=5,
+                                    required=True,
+                                    label='Password',
+                                    widget=forms.PasswordInput(attrs={
+                                        'class': tailwind_form, 'placeholder': 'Password',
+                                    }))
+    new_password2 = forms.CharField(max_length=100,
+                                    min_length=5,
+                                    required=True,
+                                    label='Password',
+                                    widget=forms.PasswordInput(attrs={
+                                        'class': tailwind_form, 'placeholder': 'Password',
+                                    }))

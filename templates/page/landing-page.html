@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load extra_filters %}
+
+{% block title %}Getting started{% endblock %}
+
+{% block content %}
+    <div class="container mt-24 mx-auto">
+        <div class="flex flex-wrap">
+            {% include 'components/page/hero.html' %}
+            {% include 'components/page/features.html' %}
+        </div>
+    </div>
+{% endblock %}

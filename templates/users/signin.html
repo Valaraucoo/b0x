@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load extra_filters %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block content %}
+    <div class="container mt-24 mx-auto h-screen">
+        <div class="flex flex-wrap">
+            <div class="w-full">
+                <h2 class="text-2xl text-center font-semibold text-gray-700">Welcome back</h2>
+                <h3 class="text-sm text-gray-800 text-center">
+                    Login in to <span class="text-pink-600">box</span> page and use all our services!
+                </h3>
+                <form method="POST" class="mt-8 shadow p-4 overflow-hidden sm:rounded-md border-b-4 border-pink-400">
+                    {% csrf_token %}
+                    <div class="flex flex-wrap -mx-3 mb-6">
+                      <div class="w-full md:w-2/3 px-3 mb-6 md:mb-0">
+                        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+                          Email
+                        </label>
+                          {% if errors.email %}
+                              {{ form.email|add_class:'border-red-400' }}
+                          {% else %}
+                              {{ form.email }}
+                          {% endif %}
+                      </div>
+                      <span class="flex w-full px-3 mt-1 text-xs text-red-500">{{ errors.email }}</span>
+                    </div>
+                    <div class="flex flex-wrap -mx-3 mb-6">
+                      <div class="w-full md:w-2/3 px-3 mb-6 md:mb-0">
+                        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+                          {% trans 'Password' %}
+                        </label>
+                        {{ form.password }}
+                          <a href="{% url 'users:password-reset' %}" class="text-xs text-pink-500 hover:text-pink-700 hover:underline">{% trans 'Forgot password?' %}</a>
+                      </div>
+                    </div>
+                    <div class="flex items-start">
+                      <div class="flex items-center h-5">
+                        <input id="remember" name="remember" type="checkbox" class="focus:ring-pink-500 h-4 w-4 text-pink-600 border-gray-300 rounded">
+                      </div>
+                      <div class="ml-3 text-sm">
+                        <label for="remember" class="font-medium text-gray-700">Remember password</label>
+                      </div>
+                    </div>
+                    <div class="py-3 bg-gray-50 text-left">
+                        <button type="submit" class="transition duration-200 inline-flex justify-center mr-8 py-3 w-full sm:w-64 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">
+                          Sign in
+                        </button>
+                  </div>
+                  <div class="text-sm mt-4">
+                      <label class="font-medium text-gray-700">Don't have an account? <a class="text-pink-600 underline hover:text-pink-700" href="{% url 'users:register' %}">Register here!</a></label>
+                  </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

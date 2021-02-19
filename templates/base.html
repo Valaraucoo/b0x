@@ -8,12 +8,22 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <title>Box | {% block title %}{% endblock title %}</title>
+  <style type="text/css">
+      *, html, *::after, *::before {
+          box-sizing: border-box;
+          padding: 0;
+          margin: 0;
+      }
+  </style>
 </head>
-<body class="bg-gray-100">
-<div id="app">
-  {% include 'components/navbar.html' %}
-  {% block content %}{% endblock content %}
-</div>
+<body class="bg-gray-100 w-full">
+  <div id="app" class="t-0">
+      {% include 'components/navbar.html' %}
+      <div class="min-h-screen">
+          {% block content %}{% endblock content %}
+      </div>
+      {% include 'components/footer.html' %}
+  </div>
 <script>
   const messagesArr = [
     {% for message in messages %}{

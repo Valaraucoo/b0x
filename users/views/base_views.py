@@ -1,15 +1,11 @@
-import abc
-from typing import Optional
-
+from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect, render
+from django.contrib.auth import login, authenticate
 from django.views import generic
 
-from core import settings
 
-
-class BaseAuthenticationView(generic.View):
+class BaseAuthView(generic.View):
     template_name: str
     form_class = None
 
@@ -40,16 +36,3 @@ class BaseAuthenticationView(generic.View):
                 messages.info(request, 'You are logged in!')
                 return redirect(settings.LOGIN_REDIRECT_URL)
         return render(request, self.template_name, context)
-
-    def post(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect(settings.LOGIN_REDIRECT_URL)
-
-        self.process_post_request(request, *args, **kwargs)
-
-        context = self.get_context_data(*args, **kwargs)
-        return render(request, self.template_name, context)
-
-    @abc.abstractmethod
-    def process_post_request(self, request, *args, **kwargs) -> None:
-        pass

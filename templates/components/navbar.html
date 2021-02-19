@@ -1,5 +1,5 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
-<nav class="bg-gray-200">
+<nav style="top: 0;" class="fixed t-0 w-full bg-gray-200 z-50">
   <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
     <div class="relative flex items-center justify-between">
       <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -19,18 +19,33 @@
         </div>
         <div class="hidden sm:block sm:ml-6">
           <div class="flex">
-            <a href="#" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Dashboard</a>
-            <a href="#" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Team</a>
-            <a href="#" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Projects</a>
-            <a href="#" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Calendar</a>
+              {% if not request.user.is_authenticated %}
+                <a href="{% url 'landing-page' %}" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium {% if request.path == '/' %}border-pink-400{% endif %}">Box</a>
+                <a href="#" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Services</a>
+                <a href="#" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Pricing</a>
+              {% else %}
+                <a href="#" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium {% if request.path == '/dashboard/' %}border-pink-400{% endif %}">Dashboard</a>
+                <a href="#" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Services</a>
+                <a href="#" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Pricing</a>
+              {% endif %}
           </div>
         </div>
       </div>
+      {% if not request.user.is_authenticated %}
       <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
         <div class="flex space-x-2 hidden sm:block">
-            <a href="#" class="transition duration-200 bg-pink-600 hover:bg-pink-700 text-white px-3 py-2 rounded-md text-sm font-medium">Get free trial</a>
+            <a href="{% url 'users:register' %}" class="transition duration-200 bg-pink-600 hover:bg-pink-700 text-white px-3 py-2 rounded-md text-sm font-medium">Get free trial</a>
         </div>
       </div>
+      {% else %}
+          <div class="flex-1 flex items-center justify-end pt-2">
+        <div class="hidden sm:block sm:ml-6">
+          <div class="flex">
+            <a href="{% url 'users:logout' %}" class="transition duration-200 border-b-2 hover:border-pink-600 text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Logout</a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
 

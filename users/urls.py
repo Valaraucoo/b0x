@@ -2,7 +2,7 @@ from django.urls import path
 from django.contrib.auth.views import LogoutView, PasswordResetView, PasswordResetConfirmView, TemplateView
 
 from .forms import CustomPasswordResetForm, CustomPasswordResetConfirmForm
-from .views import RegistrationView, ActivateAccount, DashboardView, SignInView
+from .views import RegistrationView, ActivateAccount, SignInView
 
 app_name = 'users'
 
@@ -28,5 +28,4 @@ urlpatterns = [
         template_name="users/password-reset/complete.html"
     ), name='password_reset_complete'),
     path('activate/<slug:uid>/<slug:token>/', ActivateAccount.as_view(), name='activate'),
-    path('dashboard/', DashboardView.as_view(), name='dashboard'),
 ]

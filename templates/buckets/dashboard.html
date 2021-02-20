@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <div id="dashboard" class="container mt-24 mx-auto px-4">
+        <div v-if="isOpen" @keydown.esc="isOpen = false" @blur="isOpen = false">
+            {% include 'components/buckets/create_modal.html' %}
+        </div>
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div @click="isOpen = true" class="w-full bg-white shadow-md xl:shadow-lg border border-gray-300 h-32 rounded-lg cursor-pointer transform duration-300 hover:shadow-xl">
+                <div class="flex flex-col flex-wrap justify-center self-center h-full items-center">
+                    <span class="text-5xl text-gray-700 transform duration-300 hover:text-gray-900">+</span>
+                    <span class="text-xs font-semibold text-gray-700">Create new bucket</span>
+                </div>
+            </div>
+            <div class="w-full border-dashed border-gray-400 border-2 h-32 rounded-lg"></div>
+            <div class="w-full border-dashed border-gray-400 border-2 h-32 rounded-lg"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script type="application/javascript">
+    var app = new Vue({
+      delimiters: ['[[', ']]'],
+      el: '#dashboard',
+      data: {
+          isOpen: false,
+          hasPassword: true,
+          password: '',
+      },
+      computed: {
+          passwordComputed: {
+              get: function() {
+                  return this.hasPassword ? this.password : ''
+              },
+              set: function (newPassword) {
+                  this.password = newPassword
+              }
+          }
+      },
+      created: function() {},
+    });
+  </script>
+{% endblock extrascripts %}

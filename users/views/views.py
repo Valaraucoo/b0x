@@ -100,14 +100,3 @@ class ActivateAccount(generic.View):
             messages.info(request, 'Your account has been activated!')
             return redirect('users:dashboard')
         return render(request, self.template_name)
-
-
-class DashboardView(LoginRequiredMixin, generic.TemplateView):
-    template_name = "users/dashboard.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
-            'user': self.request.user
-        })
-        return context

@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name="page/landing-page.html"), name='landing-page'),
     path('', include('users.urls', 'users')),
+    path('', include('buckets.urls', 'buckets')),
 ]
 
 

@@ -1,13 +1,40 @@
-from django.views.generic import ListView
+from django.http import HttpResponseRedirect
+from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.shortcuts import reverse
 
 from buckets import models
+
+
+class BucketDetailView(DetailView):
+    template_name = "buckets/bucket.html"
+    model = models.Bucket
+    context_object_name = "bucket"
+
+    def get(self, request, pk, *args, **kwargs):
+        bucket = self.get_object()
+        response = super().get(request, pk, *args, **kwargs)
+        if request.user == bucket.user:
+            return response
+
+        if not bucket.has_password:
+            return response
+
+        password = request.COOKIES.get(f'bucket-password-{bucket.id}')
+        if password == bucket.password:
+            return response
+
+        url = reverse('password-bucket-check', args=(bucket.id,))
+        bucket_url = reverse('buckets:bucket', args=(bucket.id,))
+
+        return HttpResponseRedirect(url + f"?next={bucket_url}")
 
 
 class UserBucketsListView(LoginRequiredMixin, ListView):
     template_name = "buckets/dashboard.html"
     model = models.Bucket
+    context_object_name = "buckets"
 
     def get_queryset(self):
         return models.Bucket.objects.filter(user=self.request.user)

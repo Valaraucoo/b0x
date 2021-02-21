@@ -1,9 +1,13 @@
 import os
 import uuid
 
+from typing import Optional
+
+from PIL import Image
+
 from django.db import models
 
-from utils import get_file_path
+from utils import get_protected_file_path
 
 
 class Bucket(models.Model):
@@ -24,28 +28,59 @@ class Bucket(models.Model):
     def __str__(self):
         return f'Bucket: {self.name} / {self.user}'
 
+    @property
+    def short_description(self):
+        if len(self.description) > 20:
+            return self.description[:-18] + '...'
+        return self.description
+
 
 class BucketFile(models.Model):
-    filename = models.CharField(max_length=255, default='', blank=True)
-    file = models.FileField(upload_to=get_file_path)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    verbose_filename = models.CharField(max_length=255, default='', blank=True)
+
+    filename = models.CharField(max_length=255, unique=True, blank=True)
+    file = models.FileField(upload_to=get_protected_file_path)
     bucket = models.ForeignKey('Bucket', related_name='files', on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, **kwargs):
-        if self.filename == '' or self.filename is None:
-            self.filename = self.file.name.split('/')[-1]
+        super().save(**kwargs)
+        self.filename = self.file.url.split('/')[-1]
         super().save(**kwargs)
 
     @property
+    def is_protected(self) -> bool:
+        return self.bucket.has_password
+
+    @property
     def size(self) -> int:
-        return self.file.size
+        return round(self.file.size / 10e5, 2)
 
     @property
     def url(self) -> str:
         return self.file.url
     
     @property
-    def extension(self):
+    def extension(self) -> str:
         return os.path.splitext(self.file.name)[1]
+
+    @property
+    def is_image(self) -> bool:
+        return self.extension in ['.jpg', '.png']
+
+    @property
+    def width(self) -> Optional[int]:
+        if self.is_image:
+            image = Image.open(self.file.file)
+            return image.size[0]
+        return None
+
+    @property
+    def height(self) -> Optional[int]:
+        if self.is_image:
+            image = Image.open(self.file.file)
+            return image.size[1]
+        return None

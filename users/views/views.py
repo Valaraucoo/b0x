@@ -33,7 +33,7 @@ class SignInView(BaseAuthView):
             if email and password:
                 user = authenticate(request, email=email, password=password)
 
-            if user:
+            if user and user.is_active:
                 login(request, user)
                 if 'remember' in request.POST:
                     request.session['email'] = email
@@ -45,6 +45,8 @@ class SignInView(BaseAuthView):
                 if request.user.is_authenticated:
                     messages.info(request, 'You are logged in!')
                     return redirect(settings.LOGIN_REDIRECT_URL)
+            elif user and not user.is_avtive:
+                messages.error('Activate you account.')
             else:
                 messages.error(request, 'Try again')
         else:

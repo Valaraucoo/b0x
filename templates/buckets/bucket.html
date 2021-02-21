@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <div id="bucket" class="container mt-24 mx-auto px-4">
+        {% include 'components/buckets/file-list.html' %}
+    </div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script type="application/javascript">
+    var app = new Vue({
+      delimiters: ['[[', ']]'],
+      el: '#bucket',
+      data: {
+      },
+      computed: {
+      },
+      created: function() {},
+      methods: {
+          openImage(url, height, width, filename) {
+              Swal.fire({
+                  title: filename,
+                  imageUrl: url,
+                  imageWidth: width,
+                  imageHeight: Math.min(height, 300),
+                  imageAlt: filename,
+                })
+          }
+      }
+    });
+  </script>
+{% endblock extrascripts %}

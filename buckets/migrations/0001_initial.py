@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('filename', models.CharField(max_length=255)),
-                ('file', models.FileField(upload_to=utils.utils.get_file_path)),
+                ('file', models.FileField(upload_to=utils.utils.get_protected_file_path)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('bucket', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='files', to='buckets.bucket')),

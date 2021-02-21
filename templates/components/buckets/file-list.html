@@ -1,0 +1,70 @@
+<!-- This example requires Tailwind CSS v2.0+ -->
+<a class="px-4 py-2 bg-red-200" href="{% url 'buckets:dashboard' %}">Go to dashboard</a>
+<div class="flex flex-col">
+  <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+    <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+      <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Filename
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Updated at
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Type
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Size
+              </th>
+              <th scope="col" class="relative px-6 py-3">
+                <span class="sr-only">Edit</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for file in bucket.files.all %}
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="rounded-full h-12 w-12 flex items-center justify-center bg-gray-200 text-gray-700">
+                      <i class="far fa-file"></i>
+                  </div>
+                  <div class="ml-4">
+                    <a href="{{ file.url }}" class="text-sm font-medium text-gray-900 hover:underline hover:text-gray-700">
+                        {{ file.filename }}
+                    </a>
+                    {% if file.is_image %}
+                        <div @click="openImage('{{ file.url }}', {{ file.height }}, {{ file.width }}, '{{ file.filename }}')" class="text-sm text-gray-500 cursor-pointer hover:underline">
+                          Preview
+                        </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ file.created_at|date:"d M Y H:i" }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  {{ file.extension }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ file.size }} Mb
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+              </td>
+            </tr>
+            {% endfor %}
+
+            <!-- More items... -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

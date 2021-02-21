@@ -1,10 +1,29 @@
-import datetime
 import os
+import datetime
 import uuid
 
 from django.conf import settings
 
 
-def get_file_path(instance, filename: str) -> str:
-    today = datetime.date.today().strftime("%Y-%m-%d")
-    return os.path.join(settings.UPLOAD_FILES_DIR, today, str(uuid.uuid4()) + filename)
+def get_protected_file_path(instance, filename: str) -> str:
+    return os.path.join(settings.UPLOAD_FILES_DIR, 'protected', str(uuid.uuid4()) + filename)
+
+
+def set_cookie(response, key, value, days_expire=7):
+    if days_expire is None:
+        max_age = 365 * 24 * 60 * 60  # one year
+    else:
+        max_age = days_expire * 24 * 60 * 60
+    expires = datetime.datetime.strftime(
+        datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age),
+        "%a, %d-%b-%Y %H:%M:%S GMT",
+    )
+    response.set_cookie(
+        key,
+        value,
+        max_age=max_age,
+        expires=expires,
+        domain=settings.SESSION_COOKIE_DOMAIN,
+        secure=settings.SESSION_COOKIE_SECURE or None,
+    )
+    return response

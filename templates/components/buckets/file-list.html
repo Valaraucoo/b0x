@@ -95,7 +95,7 @@
                   </div>
                   <div class="ml-4">
                     <a href="{{ file.url }}" class="text-sm font-medium text-gray-900 hover:underline hover:text-gray-700">
-                        {{ file.filename }}
+                        {{ file.public_filename }}
                     </a>
                     {% if file.is_image %}
                         <div @click="openImage('{{ file.url }}', {{ file.height }}, {{ file.width }}, '{{ file.filename }}')" class="text-sm text-gray-500 cursor-pointer hover:underline">

@@ -72,6 +72,26 @@ class BucketDetailView(DetailView):
 
         return HttpResponseRedirect(url + f"?next={bucket_url}")
 
+    def post(self, request, pk, *args, **kwargs):
+        response = self.get(request, pk, *args, **kwargs)
+
+        verbose_filename = request.POST.get('filename')
+        file = request.FILES.get('uploadFile')
+
+        if verbose_filename and file:
+            bucket = self.get_object()
+            bucket_file = models.BucketFile.objects.create(
+                verbose_filename=verbose_filename,
+                file=file,
+                bucket=bucket
+            )
+            bucket_file.save()
+            messages.info(request, 'Success')
+        else:
+            messages.error(request, 'Something went wrong!')
+
+        return response
+
 
 class UserBucketsListView(LoginRequiredMixin, ListView):
     template_name = "buckets/dashboard.html"

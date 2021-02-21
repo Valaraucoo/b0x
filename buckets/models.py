@@ -35,14 +35,17 @@ class Bucket(models.Model):
 
     @property
     def size(self) -> int:
-        return reduce(lambda a, b: a+b, [file.size for file in self.files.all()]) or 0
+        try:
+            return reduce(lambda a, b: a+b, [file.size for file in self.files.all()])
+        except TypeError:
+            return 0
 
 
 class BucketFile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     verbose_filename = models.CharField(max_length=255, default='', blank=True)
 
-    filename = models.CharField(max_length=255, unique=True, blank=True)
+    filename = models.CharField(max_length=255, blank=True)
     file = models.FileField(upload_to=get_protected_file_path)
     bucket = models.ForeignKey('Bucket', related_name='files', on_delete=models.CASCADE)
 
@@ -50,9 +53,14 @@ class BucketFile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, **kwargs):
-        super().save(**kwargs)
         self.filename = self.file.url.split('/')[-1]
         super().save(**kwargs)
+
+    @property
+    def public_filename(self) -> str:
+        if self.verbose_filename:
+            return self.verbose_filename
+        return self.filename
 
     @property
     def is_protected(self) -> bool:

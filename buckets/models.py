@@ -1,8 +1,7 @@
 import os
 import uuid
-
+from functools import reduce
 from typing import Optional
-
 from PIL import Image
 
 from django.db import models
@@ -33,6 +32,10 @@ class Bucket(models.Model):
         if len(self.description) > 20:
             return self.description[:-18] + '...'
         return self.description
+
+    @property
+    def size(self) -> int:
+        return reduce(lambda a, b: a+b, [file.size for file in self.files.all()]) or 0
 
 
 class BucketFile(models.Model):

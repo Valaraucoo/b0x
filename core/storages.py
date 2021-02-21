@@ -35,7 +35,7 @@ def password_check_view(request, filename):
         return redirect('protected-media')
 
     response = render(request, 'buckets/media-password.html', context={'bucket': bucket})
-    check_password(request, response, bucket)
+    response = check_password(request, response, bucket)
     return response
 
 

@@ -12,6 +12,48 @@ class BucketDetailView(DetailView):
     model = models.Bucket
     context_object_name = "bucket"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        files = self.get_object().files.all()
+        params = self.request.GET
+
+        updated_at = params.get('updated_at')
+        if updated_at:
+            value = int(updated_at)
+            if value > 0:
+                files = files.order_by('updated_at')
+            else:
+                files = files.order_by('-updated_at')
+
+        filename = params.get('filename')
+        if filename:
+            value = int(filename)
+            if value > 0:
+                files = files.order_by('filename')
+            else:
+                files = files.order_by('-filename')
+
+        size = params.get('size')
+        if size:
+            value = int(size)
+            if value > 0:
+                files = sorted(files, key=lambda file: file.size)
+            else:
+                files = sorted(files, key=lambda file: -file.size)
+
+        filetype = params.get('type')
+        if filetype:
+            value = int(filetype)
+            if value > 0:
+                files = sorted(files, key=lambda file: file.extension[1:])
+            else:
+                files = sorted(files, key=lambda file: file.extension[1:], reverse=True)
+
+        context.update({
+            'files': files
+        })
+        return context
+
     def get(self, request, pk, *args, **kwargs):
         bucket = self.get_object()
         response = super().get(request, pk, *args, **kwargs)

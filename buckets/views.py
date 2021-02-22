@@ -3,6 +3,7 @@ from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import reverse
+from django.contrib.sites.shortcuts import get_current_site
 
 from buckets import models
 
@@ -50,7 +51,8 @@ class BucketDetailView(DetailView):
                 files = sorted(files, key=lambda file: file.extension[1:], reverse=True)
 
         context.update({
-            'files': files
+            'files': files,
+            'site': get_current_site(self.request),
         })
         return context
 
@@ -75,10 +77,10 @@ class BucketDetailView(DetailView):
     def post(self, request, pk, *args, **kwargs):
         response = self.get(request, pk, *args, **kwargs)
 
-        verbose_filename = request.POST.get('filename')
+        verbose_filename = request.POST.get('filename', '')
         file = request.FILES.get('uploadFile')
 
-        if verbose_filename and file:
+        if file:
             bucket = self.get_object()
             bucket_file = models.BucketFile.objects.create(
                 verbose_filename=verbose_filename,

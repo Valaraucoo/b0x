@@ -58,7 +58,7 @@ class BucketFile(models.Model):
 
     @property
     def public_filename(self) -> str:
-        if self.verbose_filename:
+        if self.verbose_filename != '':
             return self.verbose_filename
         return self.filename
 

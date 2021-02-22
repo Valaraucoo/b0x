@@ -1,4 +1,4 @@
-<!-- This example requires Tailwind CSS v2.0+ -->
+{% load i18n %}
 <div class="flex flex-col mt-4">
   <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
     <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -65,12 +65,14 @@
                       <span class="mr-2">Size</span>
                   </a>
                   {% endif %}
-                  {% if request.GET %}
-                    <a class="absolute right-2 inset-x-1 top-2" href="{% url 'buckets:bucket' bucket.id %}">
+              </th>
+                <th class="relative px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {% if request.GET %}
+                    <a class="cursor-pointer absolute my-auto inset-x-1" href="{% url 'buckets:bucket' bucket.id %}">
                         <i class="fas fa-times "></i>
                     </a>
                   {% endif %}
-              </th>
+                </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
@@ -78,11 +80,15 @@
             <tr>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <div class="rounded-full h-12 w-12 flex items-center justify-center bg-gray-200 text-gray-700">
+                  <div class="group hover:bg-gray-300 rounded-full h-12 w-12 flex items-center justify-center bg-gray-200 text-gray-700">
                       {% if file.extension == '.png' %}
-                          <i class="far fa-file-image"></i>
+                          <div @click="openImage('{{ file.url }}', {{ file.height }}, {{ file.width }}, '{{ file.filename }}')" class="text-gray-600 cursor-pointer group-hover:text-gray-800">
+                            <i class="far fa-file-image"></i>
+                        </div>
                       {% elif file.extension == '.jpg' %}
+                        <div @click="openImage('{{ file.url }}', {{ file.height }}, {{ file.width }}, '{{ file.filename }}')" class="text-gray-600 cursor-pointer group-hover:text-gray-800">
                           <i class="far fa-file-image"></i>
+                        </div>
                       {% elif file.extension == '.pdf' %}
                           <i class="fas fa-file-pdf"></i>
                       {% elif file.extension == '.docx' %}
@@ -97,11 +103,7 @@
                     <a href="{{ file.url }}" class="text-sm font-medium text-gray-900 hover:underline hover:text-gray-700">
                         {{ file.public_filename }}
                     </a>
-                    {% if file.is_image %}
-                        <div @click="openImage('{{ file.url }}', {{ file.height }}, {{ file.width }}, '{{ file.filename }}')" class="text-sm text-gray-500 cursor-pointer hover:underline">
-                          Preview
-                        </div>
-                    {% endif %}
+                    <span class="block text-xs text-gray-500">{{ file.filename }}</span>
                   </div>
                 </div>
               </td>
@@ -116,6 +118,22 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {{ file.size }} Mb
               </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div class="relative">
+                        <div class="cursor-pointer hover:text-gray-700">
+                            <i id="options" @click="isOpen_{{ forloop.counter }} = !isOpen_{{ forloop.counter }}" class="fas fa-ellipsis-h"></i>
+                        </div>
+                        <div v-if="isOpen_{{ forloop.counter }}" id="profile-info" class="z-50 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg">
+                          <div class="z-50 overflow-visible py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
+                            {% if request.user == bucket.user %}
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">{% trans 'Edit' %}</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">{% trans 'Delete' %}</a>
+                            {% endif %}
+                            <span @click="copyUrl('{% url 'protected-media' file.filename %}')" class="cursor-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">{% trans 'Copy link' %}</span>
+                          </div>
+                        </div>
+                    </div>
+                </td>
             </tr>
             {% endfor %}
 

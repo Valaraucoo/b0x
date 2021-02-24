@@ -9,7 +9,7 @@ class BucketOwnerPermissionMixin(DetailView):
 
     def dispatch(self, request, *args, **kwargs):
         bucket = self.get_object()
-        response = super().get(request, *args, **kwargs)
+        response = super().dispatch(request, *args, **kwargs)
         if request.user == bucket.user:
             return response
         raise PermissionDenied('You do not have permission to edit the bucket.')

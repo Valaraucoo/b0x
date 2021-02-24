@@ -1,0 +1,33 @@
+{% extends "buckets/bucket.html" %}
+{% load i18n %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block modal %}
+    {% include 'components/buckets/edit-modal.html' %}
+{% endblock %}
+
+{% block extrascripts %}
+    <script type="text/javascript">
+
+    const hasPassword = document.getElementById('id_has_password');
+    const passwordInput = document.getElementById('id_password');
+
+    if (hasPassword.checked) {
+        passwordInput.required = true;
+        passwordInput.disabled = false;
+    } else {
+        passwordInput.required = false;
+        passwordInput.disabled = true;
+    }
+    hasPassword.addEventListener('change', () => {
+        if (hasPassword.checked) {
+            passwordInput.required = true;
+            passwordInput.disabled = false;
+        } else {
+            passwordInput.required = false;
+            passwordInput.disabled = true;
+        }
+    });
+    </script>
+{% endblock %}

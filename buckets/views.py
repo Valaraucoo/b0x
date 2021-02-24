@@ -1,13 +1,13 @@
-import hashlib
-
 from django.http import HttpResponseRedirect
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import reverse
 from django.contrib.sites.shortcuts import get_current_site
 
 from buckets import models
+from buckets import mixins
+from buckets import forms
 
 
 class BucketDetailView(DetailView):
@@ -81,6 +81,9 @@ class BucketDetailView(DetailView):
 
         verbose_filename = request.POST.get('filename', '')
         file = request.FILES.get('uploadFile')
+        if file.size / 1000000 > 20:
+            messages.error(request, 'File is too big!')
+            return response
 
         if file:
             bucket = self.get_object()
@@ -137,3 +140,31 @@ class UserBucketsListView(LoginRequiredMixin, ListView):
             messages.error(request, "A bucket name is required")
 
         return super().get(request, *args, **kwargs)
+
+
+class BucketEditView(UpdateView):
+    # TODO: permissions
+    model = models.Bucket
+    template_name = "buckets/edit/update.html"
+    form_class = forms.BucketForm
+    success_url = '../'
+    success_message = "Your bucket has been updated"
+    error_message = "Try gain"
+
+    def form_invalid(self, form):
+        messages.error(self.request, self.error_message)
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        messages.info(self.request, self.success_message)
+        super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        files = self.get_object().files.all()
+        context.update({
+            'files': files,
+            'site': get_current_site(self.request),
+        })
+        return context

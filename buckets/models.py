@@ -42,7 +42,7 @@ class Bucket(models.Model):
     @cached_property
     def size(self) -> int:
         try:
-            return reduce(lambda a, b: a+b, [file.size for file in self.files.all()])
+            return round(reduce(lambda a, b: a+b, [file.size for file in self.files.all()]), 2)
         except TypeError:
             return 0
 

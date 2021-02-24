@@ -4,7 +4,7 @@
 
 {% block content %}
     <div id="dashboard" class="container mt-24 mx-auto px-4">
-        <div v-if="isOpen" @keydown.esc="isOpen = false" @blur="isOpen = false">
+        <div id="create-modal" style="visibility: hidden" v-if="isOpen" @keydown.esc="isOpen = false" @blur="isOpen = false">
             {% include 'components/buckets/create_modal.html' %}
         </div>
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -61,54 +61,56 @@
       }
     });
 
+    setTimeout(() => {
+        document.getElementById('create-modal').style.visibility = 'visible';
+         var app = new Vue({
+          delimiters: ['[[', ']]'],
+          el: '#dashboard',
+          data: {
+              isOpen: false,
+              hasPassword: true,
+              password: '',
+          },
+          computed: {
+              passwordComputed: {
+                  get: function() {
+                      return this.hasPassword ? this.password : ''
+                  },
+                  set: function (newPassword) {
+                      this.password = newPassword
+                  }
+              }
+          },
+          created: function() {},
+          methods: {
+              copyUrl(url, event) {
+                  if (String(event.target.id).includes('bucket-redirect')) {
+                      console.log(event.target.id)
+                  } else {
+                      url = `127.0.0.1:8000${url}`;
+                      const el = document.createElement('textarea');
+                      el.value = url;
+                      el.setAttribute('readonly', '');
+                      el.style.position = 'absolute';
+                      el.style.left = '-9999px';
+                      document.body.appendChild(el);
+                      const selected =  document.getSelection().rangeCount > 0  ? document.getSelection().getRangeAt(0) : false;
+                      el.select();
+                      document.execCommand('copy');
+                      document.body.removeChild(el);
+                      if (selected) {
+                        document.getSelection().removeAllRanges();
+                       document.getSelection().addRange(selected);
+                      };
+                      Toast.fire({
+                        icon: 'success',
+                        title: 'Copied Bucket URL'
+                      });
+                  }
 
-    var app = new Vue({
-      delimiters: ['[[', ']]'],
-      el: '#dashboard',
-      data: {
-          isOpen: false,
-          hasPassword: true,
-          password: '',
-      },
-      computed: {
-          passwordComputed: {
-              get: function() {
-                  return this.hasPassword ? this.password : ''
-              },
-              set: function (newPassword) {
-                  this.password = newPassword
               }
           }
-      },
-      created: function() {},
-      methods: {
-          copyUrl(url, event) {
-              if (String(event.target.id).includes('bucket-redirect')) {
-                  console.log(event.target.id)
-              } else {
-                  url = `127.0.0.1:8000${url}`;
-                  const el = document.createElement('textarea');
-                  el.value = url;
-                  el.setAttribute('readonly', '');
-                  el.style.position = 'absolute';
-                  el.style.left = '-9999px';
-                  document.body.appendChild(el);
-                  const selected =  document.getSelection().rangeCount > 0  ? document.getSelection().getRangeAt(0) : false;
-                  el.select();
-                  document.execCommand('copy');
-                  document.body.removeChild(el);
-                  if (selected) {
-                    document.getSelection().removeAllRanges();
-                   document.getSelection().addRange(selected);
-                  };
-                  Toast.fire({
-                    icon: 'success',
-                    title: 'Copied Bucket URL'
-                  });
-              }
-
-          }
-      }
     });
+    }, 200);
   </script>
 {% endblock extrascripts %}

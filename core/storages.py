@@ -1,4 +1,6 @@
-from django.http import FileResponse, HttpResponseForbidden, HttpResponseRedirect
+import hashlib
+
+from django.http import FileResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect, reverse
 
 from django.contrib import messages
@@ -18,7 +20,7 @@ def serve_protected_media_file(request, filename):
         return response
 
     password = request.COOKIES.get(f'bucket-password-{bucket.id}')
-    if password == bucket.password:
+    if password == bucket.password_hash:
         return response
 
     url = reverse('password-check', args=(filename,))
@@ -52,7 +54,7 @@ def password_check_bucket_view(request, pk):
 
 def check_password(request, response, bucket):
     password = request.COOKIES.get(f'bucket-password-{bucket.id}')
-    if password == bucket.password:
+    if password == bucket.password_hash:
         response = redirect('buckets:bucket', bucket.id)
         if request.GET.get('next'):
             response = redirect(request.GET.get('next'))
@@ -65,7 +67,12 @@ def check_password(request, response, bucket):
             response = redirect('buckets:bucket', bucket.id)
             if request.GET.get('next'):
                 response = redirect(request.GET.get('next'))
-            response = set_cookie(response, f'bucket-password-{bucket.id}', bucket.password, days_expire=3)
+            response = set_cookie(
+                response,
+                f'bucket-password-{bucket.id}',
+                hashlib.md5(bucket.password.encode()).hexdigest(),
+                days_expire=3
+            )
             return response
         else:
             messages.error(request, 'Incorrect password')

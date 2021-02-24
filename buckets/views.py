@@ -1,3 +1,5 @@
+import hashlib
+
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -66,7 +68,7 @@ class BucketDetailView(DetailView):
             return response
 
         password = request.COOKIES.get(f'bucket-password-{bucket.id}')
-        if password == bucket.password:
+        if password == bucket.password_hash:
             return response
 
         url = reverse('password-bucket-check', args=(bucket.id,))

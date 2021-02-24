@@ -1,3 +1,4 @@
+import hashlib
 import os
 import uuid
 from functools import reduce
@@ -5,6 +6,7 @@ from typing import Optional
 from PIL import Image
 
 from django.db import models
+from django.utils.functional import cached_property
 
 from utils import get_protected_file_path
 
@@ -33,7 +35,11 @@ class Bucket(models.Model):
             return self.description[:-18] + '...'
         return self.description
 
-    @property
+    @cached_property
+    def password_hash(self) -> str:
+        return hashlib.md5(self.password.encode()).hexdigest()
+
+    @cached_property
     def size(self) -> int:
         try:
             return reduce(lambda a, b: a+b, [file.size for file in self.files.all()])

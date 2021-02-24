@@ -123,7 +123,7 @@
                         <div class="cursor-pointer hover:text-gray-700">
                             <i id="options" @click="isOpen_{{ forloop.counter }} = !isOpen_{{ forloop.counter }}" class="fas fa-ellipsis-h"></i>
                         </div>
-                        <div v-if="isOpen_{{ forloop.counter }}" id="profile-info" class="z-50 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg">
+                        <div style="visibility: hidden;" v-if="isOpen_{{ forloop.counter }}" id="options-{{ forloop.counter }}" class="z-50 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg">
                           <div class="z-50 overflow-visible py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
                             {% if request.user == bucket.user %}
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">{% trans 'Edit' %}</a>

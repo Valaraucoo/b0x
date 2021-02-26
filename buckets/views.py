@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect
-from django.views.generic import ListView, DetailView, UpdateView
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import reverse
@@ -142,8 +142,7 @@ class UserBucketsListView(LoginRequiredMixin, ListView):
         return super().get(request, *args, **kwargs)
 
 
-class BucketEditView(UpdateView):
-    # TODO: permissions
+class BucketEditView(mixins.BucketOwnerPermissionMixin, UpdateView):
     model = models.Bucket
     template_name = "buckets/edit/update.html"
     form_class = forms.BucketForm
@@ -166,5 +165,26 @@ class BucketEditView(UpdateView):
         context.update({
             'files': files,
             'site': get_current_site(self.request),
+        })
+        return context
+
+
+class BucketFileDeleteView(DeleteView):
+    model = models.BucketFile
+
+    def get_success_url(self):
+        return reverse('buckets:bucket', args=(self.object.bucket.pk,))
+
+    def post(self, request, *args, **kwargs):
+        messages.info(request, f"File {self.get_object().public_filename} was deleted")
+        return super().post(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        files = self.get_object().bucket.files.all()
+        context.update({
+            'files': files,
+            'site': get_current_site(self.request),
+            'bucket': self.get_object().bucket
         })
         return context

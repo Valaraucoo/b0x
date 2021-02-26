@@ -16,17 +16,21 @@
     if (hasPassword.checked) {
         passwordInput.required = true;
         passwordInput.disabled = false;
+        passwordInput.placeholder = '*******'
     } else {
         passwordInput.required = false;
         passwordInput.disabled = true;
+        passwordInput.placeholder = '-'
     }
     hasPassword.addEventListener('change', () => {
         if (hasPassword.checked) {
             passwordInput.required = true;
             passwordInput.disabled = false;
+            passwordInput.placeholder = '*******'
         } else {
             passwordInput.required = false;
             passwordInput.disabled = true;
+            passwordInput.placeholder = '-'
         }
     });
     </script>
